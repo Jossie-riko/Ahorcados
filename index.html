@@ -252,3 +252,73 @@
           gameOver = true;
           score += 10;
           updateScore();
+                    updateScore();
+          localStorage.setItem('hangmanScore', score.toString());
+          showMessage('¡EXCELENTE! 🎉 ¡Ganaste!', 'win');
+          vibrate([200, 100, 200]);
+        }
+      } else {
+        wrongGuesses++;
+        updateHangman();
+        const container = document.querySelector('.container');
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 500);
+        if (wrongGuesses >= 6) {
+          gameOver = true;
+          showMessage(`Game Over 😔\nLa palabra era: ${currentWord}`, 'lose');
+          revealWord();
+          vibrate([500, 200, 500]);
+        } else {
+          vibrate([100, 50, 100]);
+        }
+      }
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      document.getElementById('wordDisplay').textContent = guessedWord.join(' ');
+      document.getElementById('errors').textContent = wrongGuesses;
+    }
+
+    function updateHangman() {
+      document.getElementById('hangmanDisplay').textContent = hangmanParts[wrongGuesses];
+    }
+
+    function showMessage(text, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = text;
+      messageDiv.className = `message ${type}`;
+    }
+
+    function revealWord() {
+      guessedWord = currentWord.split('');
+      updateDisplay();
+    }
+
+    function resetAlphabet() {
+      const buttons = document.querySelectorAll('.letter-btn');
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('correct');
+        btn.style.transform = '';
+      });
+    }
+
+    function updateScore() {
+      document.getElementById('score').textContent = score;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (gameOver) return;
+      const letter = e.key.toUpperCase();
+      if (letter >= 'A' && letter <= 'Z') {
+        const btn = document.querySelector(`[data-letter="${letter}"]`);
+        if (btn && !btn.disabled) {
+          guessLetter(letter, btn);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
