@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego del Ahorcado</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      background-color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 2em;
+    }
+
+    h1 {
+      color: #111;
+      font-size: 2em;
+      margin-top: 1em;
+    }
+
+    #word {
+      font-size: 2em;
+      letter-spacing: 0.5em;
+      margin: 1em 0;
+      color: #333;
+    }
+
+    #letters {
+      margin-top: 1em;
+    }
+
+    #letters button {
+      background-color: #f4f4f4;
+      border: none;
+      padding: 0.7em 1.2em;
+      margin: 0.2em;
+      font-size: 1em;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    #letters button:disabled {
+      background-color: #ddd;
+      color: #999;
+      cursor: default;
+    }
+
+    #status {
+      margin-top: 2em;
+      font-weight: bold;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h1>Juego del Ahorcado</h1>
+  <div id="word">_ _ _ _ _</div>
+  <div id="letters"></div>
+  <div id="status"></div>
+
+  <script>
+    const palabras = ["gato", "perro", "ratón", "jirafa", "elefante"];
+    const palabra = palabras[Math.floor(Math.random() * palabras.length)];
+    let letrasAdivinadas = [];
+    let intentos = 6;
+
+    const wordDiv = document.getElementById("word");
+    const lettersDiv = document.getElementById("letters");
+    const statusDiv = document.getElementById("status");
+
+    function mostrarPalabra() {
+      wordDiv.textContent = palabra
+        .split("")
+        .map(letra => (letrasAdivinadas.includes(letra) ? letra : "_"))
+        .join(" ");
+    }
+
+    function crearBotones() {
+      const abecedario = "abcdefghijklmnopqrstuvwxyz";
+      abecedario.split("").forEach(letra => {
+        const btn = document.createElement("button");
+        btn.textContent = letra;
+        btn.onclick = () => adivinarLetra(letra, btn);
+        lettersDiv.appendChild(btn);
+      });
+    }
+
+    function adivinarLetra(letra, boton) {
+      boton.disabled = true;
+      if (palabra.includes(letra)) {
+        letrasAdivinadas.push(letra);
+        mostrarPalabra();
+        if (!wordDiv.textContent.includes("_")) {
+          statusDiv.textContent = "¡Ganaste! 🎉";
+        }
+      } else {
+        intentos--;
+        statusDiv.textContent = `Te quedan ${intentos} intento(s)`;
+        if (intentos === 0) {
+          statusDiv.textContent = `Perdiste 😢. La palabra era "${palabra}".`;
+          lettersDiv.querySelectorAll("button").forEach(b => b.disabled = true);
+        }
+      }
+    }
+
+    mostrarPalabra();
+    crearBotones();
+  </script>
+</body>
+</html>
