@@ -3,12 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prueba Ahorcado</title>
+  <title>Juego del Ahorcado</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      color: #333;
+    }
+    #word {
+      font-size: 2rem;
+      letter-spacing: 0.5rem;
+      margin: 1rem 0;
+    }
+    #letters button {
+      margin: 0.2rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h1>¡Hola, esto está funcionando! 🎯</h1>
+  <h1>Juego del Ahorcado</h1>
+  <div id="word">_ _ _ _ _</div>
+  <div id="letters"></div>
+  <div id="status"></div>
+
   <script>
-    console.log("Todo bien por aquí");
+    const palabras = ["gato", "perro", "ratón", "jirafa", "elefante"];
+    const palabra = palabras[Math.floor(Math.random() * palabras.length)];
+    let letrasAdivinadas = [];
+    let intentos = 6;
+
+    const wordDiv = document.getElementById("word");
+    const lettersDiv = document.getElementById("letters");
+    const statusDiv = document.getElementById("status");
+
+    function mostrarPalabra() {
+      wordDiv.textContent = palabra
+        .split("")
+        .map(letra => (letrasAdivinadas.includes(letra) ? letra : "_"))
+        .join(" ");
+    }
+
+    function crearBotones() {
+      const abecedario = "abcdefghijklmnopqrstuvwxyz";
+      abecedario.split("").forEach(letra => {
+        const btn = document.createElement("button");
+        btn.textContent = letra;
+        btn.onclick = () => adivinarLetra(letra, btn);
+        lettersDiv.appendChild(btn);
+      });
+    }
+
+    function adivinarLetra(letra, boton) {
+      boton.disabled = true;
+      if (palabra.includes(letra)) {
+        letrasAdivinadas.push(letra);
+        mostrarPalabra();
+        if (!wordDiv.textContent.includes("_")) {
+          statusDiv.textContent = "¡Ganaste! 🎉";
+        }
+      } else {
+        intentos--;
+        statusDiv.textContent = `Te quedan ${intentos} intento(s)`;
+        if (intentos === 0) {
+          statusDiv.textContent = `Perdiste 😢. La palabra era "${palabra}".`;
+          lettersDiv.querySelectorAll("button").forEach(b => b.disabled = true);
+        }
+      }
+    }
+
+    mostrarPalabra();
+    crearBotones();
   </script>
 </body>
 </html>
