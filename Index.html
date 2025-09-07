@@ -2,207 +2,88 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Ahorcado</title>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/6168/6168592.png" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego del Ahorcado</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      color: white;
-      padding: 10px;
-      overflow-x: hidden;
-    }
-
-    .container {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 15px;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
       text-align: center;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
-      margin: 10px auto;
+      padding: 2rem;
     }
-
     h1 {
+      color: #333;
+    }
+    #word {
       font-size: 2rem;
-      margin-bottom: 15px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.5rem;
+      margin: 1rem 0;
     }
-
-    select {
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 8px;
+    #letters button {
+      margin: 0.2rem;
+      padding: 0.5rem 1rem;
       font-size: 1rem;
-      font-weight: bold;
-      border: none;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-    }
-
-    .hangman-display {
-      font-family: 'Courier New', monospace;
-      font-size: 1rem;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 15px;
-      border-radius: 10px;
-      margin: 15px 0;
-      white-space: pre-line;
-      min-height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .word-display {
-      font-size: 1.8rem;
-      font-weight: bold;
-      letter-spacing: 0.2em;
-      margin: 15px 0;
-      padding: 15px 10px;
-      background: rgba(255, 255, 255, 0.25);
-      border-radius: 10px;
-    }
-
-    .game-info {
-      display: flex;
-      justify-content: space-between;
-      margin: 15px 0;
-      font-size: 1rem;
-      font-weight: bold;
-    }
-
-    .alphabet {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      margin: 20px 0;
-    }
-
-    .letter-btn {
-      background: rgba(255, 255, 255, 0.25);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      padding: 12px 8px;
-      border-radius: 8px;
       cursor: pointer;
-      font-size: 1rem;
+    }
+    #status {
+      margin-top: 1rem;
       font-weight: bold;
-      transition: all 0.2s ease;
-    }
-
-    .letter-btn.correct {
-      background: rgba(0, 255, 0, 0.4);
-      border-color: rgba(0, 255, 0, 0.5);
-    }
-
-    .letter-btn:disabled {
-      background: rgba(255, 0, 0, 0.4);
-      border-color: rgba(255, 0, 0, 0.5);
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .new-game-btn {
-      background: linear-gradient(45deg, #ff6b6b, #feca57);
-      border: none;
-      color: white;
-      padding: 15px 25px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: bold;
-      margin-top: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .message {
-      font-size: 1rem;
-      font-weight: bold;
-      margin: 15px 0;
-      padding: 12px;
-      border-radius: 10px;
-      min-height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .win {
-      background: rgba(0, 255, 0, 0.3);
-      color: #90EE90;
-      border: 1px solid rgba(0, 255, 0, 0.5);
-    }
-
-    .lose {
-      background: rgba(255, 0, 0, 0.3);
-      color: #FFB6C1;
-      border: 1px solid rgba(255, 0, 0, 0.5);
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    .shake {
-      animation: shake 0.5s ease-in-out;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎯 AHORCADO</h1>
-    <select id="difficulty">
-      <option value="facil">Fácil</option>
-      <option value="medio">Medio</option>
-      <option value="dificil">Difícil</option>
-    </select>
-    <div class="hangman-display" id="hangmanDisplay"></div>
-    <div class="word-display" id="wordDisplay"></div>
-    <div class="game-info">
-      <div>Errores: <span id="errors">0</span>/6</div>
-      <div>Puntuación: <span id="score">0</span></div>
-    </div>
-    <div class="alphabet" id="alphabet"></div>
-    <div class="message" id="message"></div>
-    <button class="new-game-btn" onclick="newGame()">🎮 Nuevo Juego</button>
-  </div>
+  <h1>Juego del Ahorcado</h1>
+  <div id="word">_ _ _ _ _</div>
+  <div id="letters"></div>
+  <div id="status"></div>
 
   <script>
-    const wordBank = {
-      facil: [
-        { word: 'GATO', hint: 'Animal doméstico que maúlla' },
-        { word: 'MESA', hint: 'Mueble con patas para comer o trabajar' },
-        { word: 'AGUA', hint: 'Líquido vital e incoloro' },
-        { word: 'LIBRO', hint: 'Objeto que contiene páginas para leer' },
-        { word: 'PERRO', hint: 'Animal doméstico que ladra' }
-      ],
-      medio: [
-        { word: 'PYTHON', hint: 'Lenguaje de programación popular' },
-        { word: 'VARIABLE', hint: 'Elemento que puede cambiar en programación' },
-        { word: 'FAMILIA', hint: 'Grupo de personas unidas por parentesco' },
-        { word: 'MONTAÑA', hint: 'Elevación natural del terreno' },
-        { word: 'FUNCION', hint: 'Bloque de código reutilizable' }
-      ],
-      dificil: [
-        { word: 'COMPUTADORA', hint: 'Dispositivo electrónico para procesar datos' },
-        { word: 'TECNOLOGIA', hint: 'Conjunto de conocimientos aplicados' },
-        { word: 'DESARROLLO', hint: 'Proceso de crecimiento o mejora' },
-        { word: 'PROGRAMAR', hint: 'Escribir instrucciones para una máquina' },
-        { word: 'APLICACION', hint: 'Software que realiza tareas específicas' }
-      ]
-    };
+    const palabras = ["gato", "perro", "ratón", "jirafa", "elefante"];
+    const palabra = palabras[Math.floor(Math.random() * palabras.length)];
+    let letrasAdivinadas = [];
+    let intentos = 6;
 
-    const hangmanParts = ['', '  ___\n  |  |\n  |\n  |\n  |\n__|__', '  ___\n  |  |\n  |  😵\n  |\n  |\n__|__', '  ___\n  |  |\n  |  😵\n  |  |\n  |\n__|__', '  ___\n  |  |\n  |  😵\n  | /|\n  |\n__|__', '  ___\n  |  |\n  |  😵\n  | /|\\\n  |\n__|__', '  ___\n  |  |\n  |  😵\n 
+    const wordDiv = document.getElementById("word");
+    const lettersDiv = document.getElementById("letters");
+    const statusDiv = document.getElementById("status");
+
+    function mostrarPalabra() {
+      wordDiv.textContent = palabra
+        .split("")
+        .map(letra => (letrasAdivinadas.includes(letra) ? letra : "_"))
+        .join(" ");
+    }
+
+    function crearBotones() {
+      const abecedario = "abcdefghijklmnopqrstuvwxyz";
+      abecedario.split("").forEach(letra => {
+        const btn = document.createElement("button");
+        btn.textContent = letra;
+        btn.onclick = () => adivinarLetra(letra, btn);
+        lettersDiv.appendChild(btn);
+      });
+    }
+
+    function adivinarLetra(letra, boton) {
+      boton.disabled = true;
+      if (palabra.includes(letra)) {
+        letrasAdivinadas.push(letra);
+        mostrarPalabra();
+        if (!wordDiv.textContent.includes("_")) {
+          statusDiv.textContent = "¡Ganaste! 🎉";
+        }
+      } else {
+        intentos--;
+        statusDiv.textContent = `Te quedan ${intentos} intento(s)`;
+        if (intentos === 0) {
+          statusDiv.textContent = `Perdiste 😢. La palabra era "${palabra}".`;
+          lettersDiv.querySelectorAll("button").forEach(b => b.disabled = true);
+        }
+      }
+    }
+
+    mostrarPalabra();
+    crearBotones();
+  </script>
+</body>
+</html>
